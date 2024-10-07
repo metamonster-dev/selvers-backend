@@ -22,4 +22,11 @@ class TermsOfUse extends Model
     {
         return $this->belongsToMany(User::class, 'user_terms_of_uses')->withPivot('agree')->withTimestamps();
     }
+
+    protected function casts(): array
+    {
+        return [
+            'require' => 'boolean',
+        ];
+    }
 }

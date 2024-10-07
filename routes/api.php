@@ -24,6 +24,10 @@ Route::post('/users', [UserController::class, 'register'])->name('user.register'
 Route::get('/users/me', [UserController::class, 'retriveMe'])->middleware('auth:sanctum')->name('user.me');
 Route::get('/users/{id}', [UserController::class, 'retriveBasic'])->middleware('auth:sanctum')->name('user.retrive');
 
+// 회원 상세 정보 조회. 관리자만 호출 가능
+Route::get('/users/{id}/detail', [UserController::class, 'retriveDetail'])->middleware('auth:sanctum')->name('user.retriveDetail');
+
+
 // 회원 정보 수정
 Route::put('/users/{id}', [UserController::class, 'update'])->middleware('auth:sanctum')->name('user.update');
 
@@ -33,6 +37,9 @@ Route::delete('/users/{id}', [UserController::class, 'setStateDeleted'])->middle
 // 기업 회원가입
 Route::post('/users/{id}/company', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
 
+// 기업 승인
+Route::post('/users/{id}/company/accept', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
+
 
 // 임시 비밀번호 발급
 Route::put('/users/password/reset', [UserController::class, 'resetPassword'])->name('user.register');
@@ -40,6 +47,16 @@ Route::put('/users/password/reset', [UserController::class, 'resetPassword'])->n
 // 회원가입 후 이메일 인증
 Route::get('/auth/verity/{token}', [AuthController::class, 'verityEmail'])->name('auth.verity');
 
+
+
+
+// 테스트를 위한 관리자 전환
+Route::get('/user-to-admin', function (Request $request) {
+    $user = $request->user();
+    $user->is_admin = true;
+    $user->save();
+    return "OK";
+})->middleware('auth:sanctum');
 
 
 

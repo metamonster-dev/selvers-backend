@@ -10,6 +10,7 @@ use App\Models\UserTermsOfUse;
 use App\Models\UserCompany;
 
 use App\Http\Resources\UserBasicResource;
+use App\Http\Resources\UserDetailResource;
 
 use Validator;
 use Illuminate\Validation\Rule;
@@ -78,9 +79,12 @@ class UserController extends BaseController
     public function registerCompany(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
-        if ($user->company != null) {
+        if ($user->id != $id)
+            return $this->sendError('Authentication Error.'); 
+        
+        if ($user->company != null)
             return $this->sendError('Already registed.');  
-        }
+
 
         $validator = Validator::make($request->all(), [
             'company_name' => 'required',
@@ -197,14 +201,15 @@ class UserController extends BaseController
         return $this->sendResponse($success, 'User retrived data');
     }
 
-    // public function retriveDetail(Request $request, string $id): JsonResponse
-    // {
+    public function retriveDetail(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user->is_admin)
+            return $this->sendError('Authentication Error.');
 
-
-
-    //     $success = new UserBasicResource($request->user());
-    //     return $this->sendResponse($success, 'User retrived data');
-    // }
+        $success = new UserDetailResource(User::find($id));
+        return $this->sendResponse($success, 'User retrived data');
+    }
 
 
 
@@ -215,7 +220,7 @@ class UserController extends BaseController
         if ($user->id != $id)
             return $this->sendError('Authentication Error.'); 
 
-        $user->update(["state" => 2]);
+        $user->update(["state" => 2, "deleted_at" => now()]);
 
         $success = [];
         return $this->sendResponse($success, 'User delete successfully.');

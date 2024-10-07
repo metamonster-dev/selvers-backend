@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamp('password_updated_at')->default(now());
             $table->integer('state')->unsigned()->default(0); // 0: 인증 대기, 1: 일반 회원, 2: 탈퇴 회원
             $table->boolean('is_admin')->default(false); // False: 일반 회원, True: 관리자
-            $table->rememberToken();
+            $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
         });
 
