@@ -5,9 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController as UserController;
 use App\Http\Controllers\AuthController as AuthController;
 
+// 인증 토큰 생성(로그인) 
 Route::post('/auth', [AuthController::class, 'createToken'])->name('auth.createToken');
+
+// 인증 토큰 삭제(로그아웃) 
 Route::delete('/auth', [AuthController::class, 'deleteToken'])->middleware('auth:sanctum')->name('auth.deleteToken');
 
+// 유저 생성(회원가입)
 Route::post('/users', [UserController::class, 'register'])->name('user.register');
 
 // 회원 리스트 조회. 관리자만 호출 가능.
@@ -15,11 +19,18 @@ Route::post('/users', [UserController::class, 'register'])->name('user.register'
 // 회원 탈퇴. 관리자만 호출 가능.
 // Route::delete('/users', [UserController::class, 'register'])->middleware('auth:sanctum')->name('user.register');
 
+
+// 회원 정보 조회
 Route::get('/users/me', [UserController::class, 'retriveMe'])->middleware('auth:sanctum')->name('user.me');
 Route::get('/users/{id}', [UserController::class, 'retriveBasic'])->middleware('auth:sanctum')->name('user.retrive');
-Route::put('/users/{id}', [UserController::class, 'update'])->middleware('auth:sanctum')->name('user.update');
-Route::delete('/users/{id}', [UserController::class, 'setStateDelete'])->middleware('auth:sanctum')->name('user.delete');
 
+// 회원 정보 수정
+Route::put('/users/{id}', [UserController::class, 'update'])->middleware('auth:sanctum')->name('user.update');
+
+// 회원 탈퇴
+Route::delete('/users/{id}', [UserController::class, 'setStateDeleted'])->middleware('auth:sanctum')->name('user.delete');
+
+// 기업 회원가입
 Route::post('/users/{id}/company', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
 
 

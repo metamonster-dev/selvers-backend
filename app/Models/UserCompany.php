@@ -11,6 +11,17 @@ use App\Models\User;
 class UserCompany extends Model
 {
     use HasFactory;
+    
+    protected $fillable = [
+        'user_id',
+        'company_name',
+        'company_id',
+        'company_id_file',
+        'name',
+        'department',
+        'position',
+        'contact',
+    ];
 
     public function user(): BelongsTo
     {

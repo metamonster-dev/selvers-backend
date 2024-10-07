@@ -7,17 +7,19 @@ use App\Http\Controllers\BaseController as BaseController;
 
 use App\Models\User;
 use App\Models\UserTermsOfUse;
+use App\Models\UserCompany;
 
 use App\Http\Resources\UserBasicResource;
-
 
 use Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rules\File;
 use App\Rules\TermsOfUsesCheck;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use Mail;
 
 class UserController extends BaseController
@@ -76,7 +78,7 @@ class UserController extends BaseController
     public function registerCompany(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
-        if ($user->company == null) {
+        if ($user->company != null) {
             return $this->sendError('Already registed.');  
         }
 
@@ -99,11 +101,14 @@ class UserController extends BaseController
 
         $uploadFolder = 'company_id';
         $image = $request->file('company_id_file');
+
         $image_uploaded_path = $image->store($uploadFolder, 'public');
+        $image_name = basename($image_uploaded_path);
+        $image_url = Storage::disk('public')->url($image_uploaded_path);
      
         $input = $request->all();
         $input['user_id'] = $user->id;
-        $input['image'] = $image_uploaded_path;
+        $input['company_id_file'] = $image_url;
         $user = UserCompany::create($input);
 
         $success = [];
@@ -147,9 +152,6 @@ class UserController extends BaseController
             'password' => [
                 Password::min(8)->numbers()->letters()
             ],
-            'birth' => 'date',
-            'sex' => 'boolean',
-
             'interests.*' => Rule::exists('interests', 'id'),
         ]);
      
@@ -157,7 +159,7 @@ class UserController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());       
         }
      
-        $input = $request->only(['contact', 'password', 'sex', 'birth', 'interests']);
+        $input = $request->only(['contact', 'password', 'interests']);
         if (array_key_exists('password', $input))
             $input['password'] = bcrypt($input['password']);
         if (array_key_exists('interests', $input))
@@ -194,7 +196,7 @@ class UserController extends BaseController
         return $this->sendResponse($success, 'User retrived data');
     }
 
-    public function setStateDelete(Request $request, string $id): JsonResponse
+    public function setStateDeleted(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
         if ($user->id != $id)
