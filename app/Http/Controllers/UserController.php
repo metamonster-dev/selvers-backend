@@ -40,7 +40,7 @@ class UserController extends BaseController
             'birth' => 'required|date',
             'sex' => 'required|boolean',
 
-            'interests.*' => Rule::exists('interests', 'id'),
+            'interests.*' => Rule::exists('categories', 'id'),
             'terms_of_uses' => [
                 'required',
                 new TermsOfUsesCheck(),

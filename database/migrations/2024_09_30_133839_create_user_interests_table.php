@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Interest;
+use App\Models\Category;
 
 return new class extends Migration
 {
@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('interests', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -20,7 +20,7 @@ return new class extends Migration
         
         Schema::create('user_interests', function (Blueprint $table) {
             $table->foreignId('user_id')->index()->constrained()->onDelete('cascade');
-            $table->foreignId('interest_id')->index()->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->index()->constrained(table: 'categories')->onDelete('cascade');
         });
 
         // Insert Default Data
@@ -41,7 +41,7 @@ return new class extends Migration
             ['name' => '레저/관광'],
         );
         foreach ($data as $datum)
-            $interest = Interest::create($datum);;
+            Category::create($datum);;
 
     }
 
@@ -51,6 +51,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('user_interests');
-        Schema::dropIfExists('interests');
+        Schema::dropIfExists('categories');
     }
 };

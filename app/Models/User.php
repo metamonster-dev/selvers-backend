@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\UserCompany;
 use App\Models\UserSocial;
 
-use App\Models\Interest;
+use App\Models\Category;
 use App\Models\TermsOfUse;
 
 class User extends Authenticatable
@@ -75,7 +75,7 @@ class User extends Authenticatable
 
     public function interests(): BelongsToMany
     {
-        return $this->belongsToMany(Interest::class, 'user_interests');
+        return $this->belongsToMany(Category::class, 'user_interests');
     }
 
     public function termsOfUses(): BelongsToMany

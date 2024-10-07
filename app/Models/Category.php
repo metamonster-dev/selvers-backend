@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use App\Models\User;
 
-class Interest extends Model
+class Category extends Model
 {
     use HasFactory;
 
