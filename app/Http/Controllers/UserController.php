@@ -81,10 +81,6 @@ class UserController extends BaseController
         $user = $request->user();
         if ($user->id != $id)
             return $this->sendError('Authentication Error.'); 
-        
-        if ($user->company != null)
-            return $this->sendError('Already registed.');  
-
 
         $validator = Validator::make($request->all(), [
             'company_name' => 'required',
@@ -107,17 +103,26 @@ class UserController extends BaseController
         $image = $request->file('company_id_file');
 
         $image_uploaded_path = $image->store($uploadFolder, 'public');
-        $image_name = basename($image_uploaded_path);
         $image_url = Storage::disk('public')->url($image_uploaded_path);
      
-        $input = $request->all();
+        $input = $request->only(['company_name', 'company_id', 'name', 'department', 'position', 'contact']);
         $input['user_id'] = $user->id;
-        $input['company_id_file'] = $image_url;
+        $input['company_id_file'] = $image_uploaded_path;
         $input['company_id_file_name'] = $image->getClientOriginalName();
-        $user = UserCompany::create($input);
+
+        $company = $user->company;
+        if ($company == null) {
+            UserCompany::create($input);
+            $str = 'User company register successfully.';
+        } else {
+            Storage::disk('public')->delete($company->company_id_file);
+            $input["accept"] = 0;
+            $company->update($input);
+            $str = 'User company update successfully.';
+        }
 
         $success = [];
-        return $this->sendResponse($success, 'User company register successfully.');
+        return $this->sendResponse($success, $str);
     }
 
     public function resetPassword(Request $request): JsonResponse
@@ -150,21 +155,29 @@ class UserController extends BaseController
     public function update(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
-        if ($user->id != $id)
+        if ($user->id != $id && !$user->is_admin)
             return $this->sendError('Authentication Error.'); 
 
         $validator = Validator::make($request->all(), [
             'password' => [
                 Password::min(8)->numbers()->letters()
             ],
-            'interests.*' => Rule::exists('interests', 'id'),
+            'birth' => 'date',
+            'sex' => 'boolean',
+            'interests.*' => Rule::exists('categories', 'id'),
         ]);
      
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
-     
-        $input = $request->only(['contact', 'password', 'interests']);
+
+        if (!$user->is_admin)
+            $input = $request->only(['contact', 'password', 'sex', 'birth', 'interests']);
+        else {
+            $input = $request->only(['contact', 'interests']);
+            $user = User::find($id);
+        }
+
         if (array_key_exists('password', $input))
             $input['password'] = bcrypt($input['password']);
         if (array_key_exists('interests', $input))
@@ -175,6 +188,12 @@ class UserController extends BaseController
         $success = [];
         return $this->sendResponse($success, 'User update successfully.');
     }
+
+
+
+
+
+
 
     public function retrive(Request $request, string $id): JsonResponse
     {

@@ -34,11 +34,11 @@ Route::put('/users/{id}', [UserController::class, 'update'])->middleware('auth:s
 // 회원 탈퇴
 Route::delete('/users/{id}', [UserController::class, 'setStateDeleted'])->middleware('auth:sanctum')->name('user.delete');
 
-// 기업 회원가입
+// 기업 회원가입 및 기업 정보 수정. 수정할 경우 accept가 0(대기) 상태로 돌아감
 Route::post('/users/{id}/company', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
 
 // 기업 승인
-Route::post('/users/{id}/company/accept', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
+// Route::post('/users/{id}/company/accept', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
 
 
 // 임시 비밀번호 발급
