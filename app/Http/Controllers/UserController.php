@@ -64,9 +64,9 @@ class UserController extends BaseController
         foreach($input['terms_of_uses'] as $key => $val)
             $user->termsOfUses()->attach($key, ['agree' => $val]);
 
-        Mail::send('emailVerificationEmail', ['token' => $token], function($message) use($request) {
+        Mail::send('emailVerificationEmail', ['token' => $token, 'name' => $input['name'], 'email' => $input['email'], 'time' => now()->toDateTimeString()], function($message) use($request) {
             $message->to($request->email);
-            $message->subject('Email Verification Mail');
+            $message->subject('[마이스 메이트] 회원가입 안내');
         });
 
         $success = [];

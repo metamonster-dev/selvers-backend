@@ -23,6 +23,10 @@ Route::delete('/users/{id}', [UserController::class, 'setStateDelete'])->middlew
 Route::post('/users/{id}/company', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
 
 
+// 회원가입 후 이메일 인증
+Route::get('/auth/verity/{token}', [AuthController::class, 'verityEmail'])->name('auth.verity');
+
+
 
 
 
@@ -30,7 +34,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('/auth/verity/{token}', [AuthController::class, 'verityEmail'])->name('auth.verity');
 
 Route::get('/auth/kakao', function (Request $request) {
     return "OK";

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('email_verity_token');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->timestamp('passwrod_updated_at')->useCurrent();
             $table->integer('state')->unsigned()->default(0); // 0: 인증 대기, 1: 일반 회원, 2: 탈퇴 회원
             $table->boolean('is_admin')->default(false); // False: 일반 회원, True: 관리자
             $table->rememberToken();

@@ -43,6 +43,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'passwrod_updated_at',
         'remember_token',
         'email_verity_token',
         'email_verified_at',
@@ -58,6 +59,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'passwrod_updated_at' => 'datetime',
             'sex' => 'boolean',
             'is_admin' => 'boolean',
         ];
