@@ -17,6 +17,7 @@ class UserCompany extends Model
         'company_name',
         'company_id',
         'company_id_file',
+        'company_id_file_name',
         'name',
         'department',
         'position',

@@ -109,6 +109,7 @@ class UserController extends BaseController
         $input = $request->all();
         $input['user_id'] = $user->id;
         $input['company_id_file'] = $image_url;
+        $input['company_id_file_name'] = $image->getClientOriginalName();
         $user = UserCompany::create($input);
 
         $success = [];
@@ -195,6 +196,18 @@ class UserController extends BaseController
         $success = new UserBasicResource($request->user());
         return $this->sendResponse($success, 'User retrived data');
     }
+
+    // public function retriveDetail(Request $request, string $id): JsonResponse
+    // {
+
+
+
+    //     $success = new UserBasicResource($request->user());
+    //     return $this->sendResponse($success, 'User retrived data');
+    // }
+
+
+
 
     public function setStateDeleted(Request $request, string $id): JsonResponse
     {

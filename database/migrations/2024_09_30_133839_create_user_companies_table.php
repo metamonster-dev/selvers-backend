@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('company_name');
             $table->string('company_id');
             $table->string('company_id_file');
+            $table->string('company_id_file_name');
             $table->string('name');
             $table->string('department');
             $table->string('position');
