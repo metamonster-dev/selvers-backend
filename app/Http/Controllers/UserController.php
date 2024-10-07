@@ -163,11 +163,6 @@ class UserController extends BaseController
     }
 
 
-
-
-
-
-
     public function retrive(Request $request, string $id): JsonResponse
     {
         $authUser = $request->user();
@@ -202,8 +197,6 @@ class UserController extends BaseController
         $success = new UserDetailResource(User::find($id));
         return $this->sendResponse($success, 'User retrived data');
     }
-
-
 
 
     public function setStateDeleted(Request $request, string $id): JsonResponse
@@ -253,10 +246,7 @@ class UserController extends BaseController
             
             return $this->sendResponse([], 'Company is not granted');
         }
-
-
     }
-
 
     public function resetPassword(Request $request): JsonResponse
     {
