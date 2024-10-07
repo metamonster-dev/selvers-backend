@@ -1,0 +1,207 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\BaseController as BaseController;
+
+use App\Models\User;
+use App\Models\UserTermsOfUse;
+
+use App\Http\Resources\UserBasicResource;
+
+
+use Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+use App\Rules\TermsOfUsesCheck;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
+use Mail;
+
+class UserController extends BaseController
+{
+    /**
+     * Register api
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|unique:users',
+            'password' => [
+                'required',
+                Password::min(8)->numbers()->letters()
+            ],
+            'c_password' => 'required|same:password',
+            'birth' => 'required|date',
+            'sex' => 'required|boolean',
+
+            'interests.*' => Rule::exists('interests', 'id'),
+            'terms_of_uses' => [
+                'required',
+                new TermsOfUsesCheck(),
+            ],
+
+        ]);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+     
+        $token = Str::random(64);
+        $input = $request->all();
+        $input['password'] = bcrypt($input['password']);
+        $input['email_verity_token'] = $token;
+        $user = User::create($input);
+
+        if (array_key_exists('interests', $input))
+            $user->interests()->attach($input['interests']);
+
+        foreach($input['terms_of_uses'] as $key => $val)
+            $user->termsOfUses()->attach($key, ['agree' => $val]);
+
+        Mail::send('emailVerificationEmail', ['token' => $token], function($message) use($request) {
+            $message->to($request->email);
+            $message->subject('Email Verification Mail');
+        });
+
+        $success = [];
+        return $this->sendResponse($success, 'User register successfully.');
+    }
+
+    public function registerCompany(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if ($user->company == null) {
+            return $this->sendError('Already registed.');  
+        }
+
+        $validator = Validator::make($request->all(), [
+            'company_name' => 'required',
+            'company_id' => 'required',
+            'company_id_file' => [
+                'required',
+                File::types(['pdf', 'png'])->max('10mb'),
+            ],
+            'name' => 'required',
+            'department' => 'required',
+            'position' => 'required',
+            'contact' => 'required',
+        ]);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $uploadFolder = 'company_id';
+        $image = $request->file('company_id_file');
+        $image_uploaded_path = $image->store($uploadFolder, 'public');
+     
+        $input = $request->all();
+        $input['user_id'] = $user->id;
+        $input['image'] = $image_uploaded_path;
+        $user = UserCompany::create($input);
+
+        $success = [];
+        return $this->sendResponse($success, 'User company register successfully.');
+    }
+
+
+
+
+
+
+
+
+
+
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if ($user->id != $id)
+            return $this->sendError('Authentication Error.'); 
+
+        $validator = Validator::make($request->all(), [
+            'password' => [
+                Password::min(8)->numbers()->letters()
+            ],
+            'birth' => 'date',
+            'sex' => 'boolean',
+
+            'interests.*' => Rule::exists('interests', 'id'),
+        ]);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+     
+        $input = $request->only(['contact', 'password', 'sex', 'birth', 'interests']);
+        if (array_key_exists('password', $input))
+            $input['password'] = bcrypt($input['password']);
+        if (array_key_exists('interests', $input))
+            $user->interests()->sync($input['interests']);
+
+        $user->update($input);
+
+        $success = [];
+        return $this->sendResponse($success, 'User update successfully.');
+    }
+
+    public function retrive(Request $request, string $id): JsonResponse
+    {
+        $authUser = $request->user();
+        if ($authUser->id != $id)
+            return $this->sendError('Authentication Error.');
+
+        return new UserBasicResource($authUser);
+    }
+
+    public function retriveMe(Request $request): JsonResponse
+    {
+        $success = new UserBasicResource($request->user());
+        return $this->sendResponse($success, 'User retrived data');
+    }
+    
+    public function retriveBasic(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if ($user->id != $id)
+            return $this->sendError('Authentication Error.');
+
+        $success = new UserBasicResource($request->user());
+        return $this->sendResponse($success, 'User retrived data');
+    }
+
+    public function setStateDelete(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if ($user->id != $id)
+            return $this->sendError('Authentication Error.'); 
+
+        $user->update(["state" => 2]);
+
+        $success = [];
+        return $this->sendResponse($success, 'User delete successfully.');
+    }
+
+
+
+
+
+
+
+
+     
+
+
+    public function testDeleteUser(Request $request, string $id) : JsonResponse
+    {
+        User::destroy($id);
+        $success = [];
+        return $this->sendResponse($success, 'User delete successfully.');
+    }
+}
