@@ -17,6 +17,8 @@ use App\Models\UserSocial;
 use App\Models\Category;
 use App\Models\TermsOfUse;
 
+use Illuminate\Support\Str;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
@@ -83,5 +85,13 @@ class User extends Authenticatable
     public function termsOfUses(): BelongsToMany
     {
         return $this->belongsToMany(TermsOfUse::class, 'user_terms_of_uses')->withPivot('agree')->withTimestamps();
+    }
+
+    public function resetPassword() : string
+    {
+        $password = Str::random(8);
+        $this->password = bcrypt($password);
+        $this->save();
+        return $password;
     }
 }

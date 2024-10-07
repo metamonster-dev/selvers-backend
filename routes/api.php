@@ -23,6 +23,9 @@ Route::delete('/users/{id}', [UserController::class, 'setStateDelete'])->middlew
 Route::post('/users/{id}/company', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
 
 
+// 임시 비밀번호 발급
+Route::put('/users/password/reset', [UserController::class, 'resetPassword'])->name('user.register');
+
 // 회원가입 후 이메일 인증
 Route::get('/auth/verity/{token}', [AuthController::class, 'verityEmail'])->name('auth.verity');
 

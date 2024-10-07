@@ -110,6 +110,33 @@ class UserController extends BaseController
         return $this->sendResponse($success, 'User company register successfully.');
     }
 
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                Rule::exists('users', 'email')
+            ]
+        ]);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $input = $request->all();
+        $user = User::where(['email' => $input['email']])->first();
+        $password = $user->resetPassword();
+
+        Mail::send('passwordResetEmail', ['password' => $password, 'name' => $user->name], function($message) use($user) {
+            $message->to($user->email);
+            $message->subject('[마이스 메이트] 임시 비밀번호 발급 안내');
+        });
+
+        $success = [];
+        return $this->sendResponse($success, 'User password reset successfully.');
+    }
+
+
     public function update(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
