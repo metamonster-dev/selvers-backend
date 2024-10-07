@@ -125,33 +125,6 @@ class UserController extends BaseController
         return $this->sendResponse($success, $str);
     }
 
-    public function resetPassword(Request $request): JsonResponse
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => [
-                'required',
-                Rule::exists('users', 'email')
-            ]
-        ]);
-     
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
-        }
-
-        $input = $request->all();
-        $user = User::where(['email' => $input['email']])->first();
-        $password = $user->resetPassword();
-
-        Mail::send('passwordResetEmail', ['password' => $password, 'name' => $user->name], function($message) use($user) {
-            $message->to($user->email);
-            $message->subject('[마이스 메이트] 임시 비밀번호 발급 안내');
-        });
-
-        $success = [];
-        return $this->sendResponse($success, 'User password reset successfully.');
-    }
-
-
     public function update(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
@@ -245,7 +218,71 @@ class UserController extends BaseController
         return $this->sendResponse($success, 'User delete successfully.');
     }
 
+    public function setCompanyAccept(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user->is_admin)
+            return $this->sendError('Authentication Error.');
+        
+        $user = User::find($id);
+        if ($user->company == null || $user->company->accept != 0)
+            return $this->sendError('Authentication Error.');
 
+        $validator = Validator::make($request->all(), [
+            'accept' => 'required|boolean'
+        ]);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        if ($request->accept) {
+            User::find($id)->update(["accept" => 2]);
+            Mail::send('grantCompanyEmail', ['name' => $user->name, 'company_name' => $user->company->company_name, 'time' => now()->toDateTimeString()], function($message) use($user) {
+                $message->to($user->email);
+                $message->subject('[마이스 메이트] 호스트 회원 승인 안내');
+            });
+
+            return $this->sendResponse([], 'Company granted');
+        } else {
+            User::find($id)->update(["accept" => 1]);
+            Mail::send('notGrantCompanyEmail', ['name' => $user->name], function($message) use($user) {
+                $message->to($user->email);
+                $message->subject('[마이스 메이트] 호스트 회원 미승인 안내');
+            });
+            
+            return $this->sendResponse([], 'Company is not granted');
+        }
+
+
+    }
+
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => [
+                'required',
+                Rule::exists('users', 'email')
+            ]
+        ]);
+     
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $input = $request->all();
+        $user = User::where(['email' => $input['email']])->first();
+        $password = $user->resetPassword();
+
+        Mail::send('passwordResetEmail', ['password' => $password, 'name' => $user->name], function($message) use($user) {
+            $message->to($user->email);
+            $message->subject('[마이스 메이트] 임시 비밀번호 발급 안내');
+        });
+
+        $success = [];
+        return $this->sendResponse($success, 'User password reset successfully.');
+    }
 
 
 

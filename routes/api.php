@@ -38,7 +38,7 @@ Route::delete('/users/{id}', [UserController::class, 'setStateDeleted'])->middle
 Route::post('/users/{id}/company', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
 
 // 기업 승인
-// Route::post('/users/{id}/company/accept', [UserController::class, 'registerCompany'])->middleware('auth:sanctum')->name('user.registerCompany');
+Route::put('/users/{id}/company/accept', [UserController::class, 'setCompanyAccept'])->middleware('auth:sanctum')->name('user.setCompanyAccept');
 
 
 // 임시 비밀번호 발급
