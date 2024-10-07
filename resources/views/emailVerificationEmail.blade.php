@@ -22,8 +22,8 @@
 </table>
 
 <div style="display:flex;margin: 20px 0;">
-    <button style="border-radius: 6px;border: 0px solid mediumpurple;background: mediumpurple;padding: 11px 13px;font-size: 12px;color: white;"> <a href="#">다른 행사 둘러보기</a></button>
-    <button style="border-radius: 6px;border: 1px solid mediumpurple;background: white;padding: 11px 13px;font-size: 12px;color: mediumpurple;font-weight: bold;margin-left: 8px;"> <a href="#">서비스 소개 보기</a></button>
+    <button style="border-radius: 6px;border: 0px solid mediumpurple;background: mediumpurple;padding: 11px 13px;font-size: 12px;"> <a style="color: white;text-decoration: none;" href="#">다른 행사 둘러보기</a></button>
+    <button style="border-radius: 6px;border: 1px solid mediumpurple;background: white;padding: 11px 13px;font-size: 12px;font-weight: bold;margin-left: 8px;"> <a style="color: mediumpurple;text-decoration: none;" href="#">서비스 소개 보기</a></button>
 </div>
 
 <div style="font-weight: bold;margin-bottom: 18px;color: #555555;">{{$name}}님이 직접 가입하지 않았다면 <a href="#">문의하기</a>로 신고해주세요.<br>소중한 정보, 안전하게 지켜드리겠습니다.</div>

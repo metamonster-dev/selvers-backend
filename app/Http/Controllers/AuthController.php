@@ -28,8 +28,11 @@ class AuthController extends BaseController
             'remember_me' => 'required|boolean',
         ]);
 
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password, 'state' => 1])) { 
+        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])) { 
             $user = Auth::user();
+            if ($user->state != 1)
+                return $this->sendError('Unauthorised.', ['error'=>'Not authenticate your email']);
+
             if ($request->remember_me)
                 $success['token'] =  $user->createToken(env('APP_NAME', 'laravel'))->plainTextToken; // 만료 X
             else

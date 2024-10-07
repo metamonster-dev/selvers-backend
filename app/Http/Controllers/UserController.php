@@ -110,15 +110,6 @@ class UserController extends BaseController
         return $this->sendResponse($success, 'User company register successfully.');
     }
 
-
-
-
-
-
-
-
-
-
     public function update(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
