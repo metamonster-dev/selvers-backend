@@ -74,14 +74,14 @@ return new class extends Migration
         Schema::create('information', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->boolean('require'); // 필수 설정 유무
+            $table->boolean('can_required'); // 필수 설정 가능 유무
         });
 
         Schema::create('event_recruit_information', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->index()->constrained()->onDelete('cascade');
+            $table->foreignId('recurit_id')->index()->constrained(table: 'event_recurits')->onDelete('cascade');
             $table->foreignId('information_id')->index()->constrained()->onDelete('cascade');
-            $table->boolean('require'); // 이벤트의 해당 정보에 대한 필수 유무
+            $table->boolean('required'); // 이벤트의 해당 정보에 대한 필수 유무
         });
 
         Schema::create('event_surveys', function (Blueprint $table) {
@@ -89,7 +89,7 @@ return new class extends Migration
             $table->foreignId('event_id')->index()->constrained()->onDelete('cascade');
             $table->integer('type')->unsigned()->default(0); // 0: 단일, 1: 다중, 2: 장문
             $table->string('options'); // JSON 형태로 저장
-            $table->boolean('require'); // 필수 설정 유무
+            $table->boolean('required'); // 필수 설정 유무
             $table->boolean('is_reject')->default(false); // 수정 요청
         });
 
@@ -131,15 +131,15 @@ return new class extends Migration
         });
 
         $data = array(
-            [ 'name' => '이름', 'require' => true ],
-            [ 'name' => '이메일', 'require' => true ],
-            [ 'name' => '휴대전화 번호', 'require' => true ],
-            [ 'name' => '소속 (회사/기관/학교명)', 'require' => false ],
-            [ 'name' => '부서', 'require' => false ],
-            [ 'name' => '직함', 'require' => false ],
-            [ 'name' => '성별', 'require' => false ],
-            [ 'name' => '나이', 'require' => false ],
-            [ 'name' => '거주지역', 'require' => false ],
+            [ 'name' => '이름', 'can_required' => false ],
+            [ 'name' => '이메일', 'can_required' => false ],
+            [ 'name' => '휴대전화 번호', 'can_required' => false ],
+            [ 'name' => '소속 (회사/기관/학교명)', 'can_required' => true ],
+            [ 'name' => '부서', 'can_required' => true ],
+            [ 'name' => '직함', 'can_required' => true ],
+            [ 'name' => '성별', 'can_required' => true ],
+            [ 'name' => '나이', 'can_required' => true ],
+            [ 'name' => '거주지역', 'can_required' => true ],
         );
         foreach ($data as $datum)
             Information::create($datum);;

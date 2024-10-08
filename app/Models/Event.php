@@ -27,6 +27,7 @@ class Event extends Model
 
     protected $fillable = [
         'user_id',
+        'category_id',
         'title',
         'img1',
         'img2',

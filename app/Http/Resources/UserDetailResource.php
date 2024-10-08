@@ -31,7 +31,7 @@ class UserDetailResource extends UserBasicResource
                 return [
                     "id" => $value->id,
                     "title" => $value->title,
-                    "require" => $value->require,
+                    "required" => $value->required,
                     "agree" => $value->pivot->agree ? true : false,
                     "updated_at" => $value->pivot->updated_at,
                 ];

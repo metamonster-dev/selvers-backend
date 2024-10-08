@@ -57,12 +57,12 @@ Route::get('/events/{id}/basic', [EventController::class, 'retriveBasic'])->midd
 Route::post('/events/{id}/basic', [EventController::class, 'updateBasic'])->middleware('auth:sanctum')->name('event.updateBasic');
 
 // 이벤트 상세 페이지 조회 및 수정
-Route::get('/events/{id}/detail', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
-Route::post('/events/{id}/detail', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+Route::get('/events/{id}/detail', [EventController::class, 'retriveDetail'])->middleware('auth:sanctum')->name('event.retriveDetail');
+Route::post('/events/{id}/detail', [EventController::class, 'updateDetail'])->middleware('auth:sanctum')->name('event.updateDetail');
 
 // 이벤트 모집 정보 조회 및 수정
-Route::get('/events/{id}/recurit', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
-Route::post('/events/{id}/recurit', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+Route::get('/events/{id}/recurit', [EventController::class, 'retriveRecurit'])->middleware('auth:sanctum')->name('event.retriveRecurit');
+Route::post('/events/{id}/recurit', [EventController::class, 'updateRecurit'])->middleware('auth:sanctum')->name('event.updateRecurit');
 
 // 이벤트 모집 정보 조회 및 수정
 Route::get('/events/{id}/survey', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');

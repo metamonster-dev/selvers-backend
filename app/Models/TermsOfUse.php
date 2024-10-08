@@ -17,7 +17,7 @@ class TermsOfUse extends Model
     protected $fillable = [
         'title',
         'context',
-        'require',
+        'required',
     ];
 
     public function termsOfUses(): BelongsToMany
@@ -28,7 +28,7 @@ class TermsOfUse extends Model
     protected function casts(): array
     {
         return [
-            'require' => 'boolean',
+            'required' => 'boolean',
         ];
     }
 }

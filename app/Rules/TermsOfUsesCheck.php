@@ -34,7 +34,7 @@ class TermsOfUsesCheck implements ValidationRule
 
         // 필수 약관 확인
         $message = '필수 약관에 동의하지 않았습니다.';
-        $requireTerms = TermsOfUse::where('require', true)->get('id');
+        $requireTerms = TermsOfUse::where('required', true)->get('id');
         foreach($requireTerms as $term) {
             if (!array_key_exists($term["id"], $value)) {
                 $fail($message);

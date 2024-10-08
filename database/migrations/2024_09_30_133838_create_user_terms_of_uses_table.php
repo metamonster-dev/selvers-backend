@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('context');
-            $table->boolean('require')->default(false);
+            $table->boolean('required')->default(false);
             $table->timestamps();
         });
 
@@ -32,17 +32,17 @@ return new class extends Migration
             [
                 'title' => '약관 1',
                 'context' => '약관 1 내용',
-                'require' => true
+                'required' => true
             ],
             [
                 'title' => '약관 2',
                 'context' => '약관 2 내용',
-                'require' => true
+                'required' => true
             ],
             [
                 'title' => '약관 3',
                 'context' => '약관 3 내용',
-                'require' => false
+                'required' => false
             ],
         );
         foreach ($data as $datum)

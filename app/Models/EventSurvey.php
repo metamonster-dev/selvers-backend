@@ -10,18 +10,18 @@ class EventSurvey extends Model
     use HasFactory;
 
     public $timestamps = false;
-    
+
     protected $fillable = [
         'event_id',
         'type',
         'options',
-        'require',
+        'required',
     ];
 
     protected function casts(): array
     {
         return [
-            'require' => 'boolean',
+            'required' => 'boolean',
         ];
     }
 }

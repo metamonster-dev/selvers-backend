@@ -17,6 +17,8 @@ use App\Models\Category;
 use App\Models\Tag;
 
 use App\Http\Resources\EventEditBasicResource;
+use App\Http\Resources\EventEditDetailResource;
+use App\Http\Resources\EventEditRecuritResource;
 
 use Validator;
 use Illuminate\Validation\Rule;
@@ -83,7 +85,6 @@ class EventController extends BaseController
             return $this->sendError('Authentication Error.'); 
 
         $validator = Validator::make($request->all(), [
-            'title' => '',
             'category_id' => Rule::exists('categories', 'id'),
             'img1' => File::types(['jpg', 'jpeg', 'png'])->max('10mb'),
             'img2' => File::types(['jpg', 'jpeg', 'png'])->max('10mb'),
@@ -129,6 +130,91 @@ class EventController extends BaseController
         if (array_key_exists('payable', $input))
             $event->payable()->update(json_decode($input['payable'], true));
         $event->update($input);
+
+        $success = [$input];
+        return $this->sendResponse($success, 'Event default data update successfully.');
+    }
+
+    public function retriveDetail(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+
+        if (!$user->is_admin) {
+            if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+                return $this->sendError('Authentication Error.');
+        }
+        
+        $success = new EventEditDetailResource($event);
+        return $this->sendResponse($success, 'Event edit detail data');
+    }
+
+    public function updateDetail(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+        if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+            return $this->sendError('Authentication Error.');
+
+        $input = $request->only(['content', 'tags']);
+        if (array_key_exists('tags', $input)) {
+            $tagIds = [];
+            foreach($input['tags'] as $name) {
+                $tag = Tag::where('name', $name)->first();
+                if ($tag == null)
+                    $tag = Tag::create(["name" => $name]);
+
+                $tagIds[] = $tag->id;
+            }
+            $event->tags()->attach($tagIds);
+        }
+        $event->update($input);
+
+        $success = [$input];
+        return $this->sendResponse($success, 'Event default data update successfully.');
+    }
+
+    public function retriveRecurit(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+
+        if (!$user->is_admin) {
+            if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+                return $this->sendError('Authentication Error.');
+        }
+        
+        $success = new EventEditRecuritResource($event);
+        return $this->sendResponse($success, 'Event edit detail data');
+    }
+
+    public function updateRecurit(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+        if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+            return $this->sendError('Authentication Error.');
+
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'date',
+            'start_time' => 'date_format:H:i',
+            'end_date' => 'date',
+            'end_time' => 'date_format:H:i',
+            'type' => 'digits_between:0,2',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $input = $request->only(['start_date', 'start_time', 'end_date', 'end_time', 'type', 'informations']);
+
+        if (array_key_exists('informations', $input)) {
+            foreach($input['informations'] as $key => $val)
+                $event->recurit->information()->sync($key, ['required' => $val]);
+        }
+        $event->recurit->update($input);
+
 
         $success = [$input];
         return $this->sendResponse($success, 'Event default data update successfully.');
