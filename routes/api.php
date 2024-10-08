@@ -2,8 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController as UserController;
 use App\Http\Controllers\AuthController as AuthController;
+use App\Http\Controllers\UserController as UserController;
+use App\Http\Controllers\EventController as EventController;
 
 // 인증 토큰 생성(로그인) 
 Route::post('/auth', [AuthController::class, 'createToken'])->name('auth.createToken');
@@ -47,6 +48,29 @@ Route::put('/users/password/reset', [UserController::class, 'resetPassword'])->n
 // 회원가입 후 이메일 인증
 Route::get('/auth/verity/{token}', [AuthController::class, 'verityEmail'])->name('auth.verity');
 
+
+// 이벤트 생성
+Route::post('/events', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+
+// 이벤트 기본 정보 조회 및 수정
+Route::get('/events/{id}/basic', [EventController::class, 'retriveBasic'])->middleware('auth:sanctum')->name('event.retriveBasic');
+Route::post('/events/{id}/basic', [EventController::class, 'updateBasic'])->middleware('auth:sanctum')->name('event.updateBasic');
+
+// 이벤트 상세 페이지 조회 및 수정
+Route::get('/events/{id}/detail', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+Route::post('/events/{id}/detail', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+
+// 이벤트 모집 정보 조회 및 수정
+Route::get('/events/{id}/recurit', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+Route::post('/events/{id}/recurit', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+
+// 이벤트 모집 정보 조회 및 수정
+Route::get('/events/{id}/survey', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+Route::post('/events/{id}/survey', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+
+// 이벤트 모집 정보 조회 및 수정
+Route::get('/events/{id}/faq', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
+Route::post('/events/{id}/faq', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
 
 
 
