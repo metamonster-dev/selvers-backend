@@ -26,7 +26,7 @@ class UserDetailResource extends UserBasicResource
             "password_updated_at" => $this->password_updated_at,
             "created_at" => $this->created_at,
             "state" => $this->state, // 0: 인증 대기, 1: 일반 회원, 2: 탈퇴 회원
-            "deleted_at" => $this->deleted_at, // 0: 인증 대기, 1: 일반 회원, 2: 탈퇴 회원
+            "deleted_at" => $this->deleted_at,
             "terms_of_uses" => $this->termsOfUses->map(function ($value) {
                 return [
                     "id" => $value->id,

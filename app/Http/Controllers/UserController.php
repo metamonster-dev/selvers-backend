@@ -230,7 +230,7 @@ class UserController extends BaseController
         }
 
         if ($request->accept) {
-            User::find($id)->update(["accept" => 2]);
+            $user->company()->update(["accept" => 2, "accepted_at" => now()]);
             Mail::send('grantCompanyEmail', ['name' => $user->name, 'company_name' => $user->company->company_name, 'time' => now()->toDateTimeString()], function($message) use($user) {
                 $message->to($user->email);
                 $message->subject('[마이스 메이트] 호스트 회원 승인 안내');
@@ -238,7 +238,7 @@ class UserController extends BaseController
 
             return $this->sendResponse([], 'Company granted');
         } else {
-            User::find($id)->update(["accept" => 1]);
+            $user->company()->update(["accept" => 1]);
             Mail::send('notGrantCompanyEmail', ['name' => $user->name], function($message) use($user) {
                 $message->to($user->email);
                 $message->subject('[마이스 메이트] 호스트 회원 미승인 안내');
