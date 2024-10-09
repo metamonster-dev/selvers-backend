@@ -28,6 +28,11 @@ class EventEditDetailResource extends JsonResource
             'tags' => $this->tags->map(function ($value) {
                 return $value->name;
             }),
+
+            'is_reject' => [
+                'content' => $this->reject->content,
+                'tag' => $this->reject->tag,
+            ],
         ];
         
         return $ret;

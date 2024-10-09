@@ -41,6 +41,12 @@ class EventEditRecuritResource extends JsonResource
                     "required" => ($info != null) ? ($info->pivot->required == 1 ? true : false) : !$value->can_required,
                 ];
             }),
+            
+            'is_reject' => [
+                'recurit_date' => $this->reject->recurit_date,
+                'recurit_type' => $this->reject->recurit_type,
+                'recurit_information' => $this->reject->recurit_information,
+            ],
         ];
         
         return $ret;

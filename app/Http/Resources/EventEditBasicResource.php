@@ -45,6 +45,17 @@ class EventEditBasicResource extends JsonResource
             'progress_url' => $this->progress_url,
             'position1' => $this->position1,
             'position2' => $this->position2,
+
+            'is_reject' => [
+                'title' => $this->reject->title,
+                'category' => $this->reject->category,
+                'img' => $this->reject->img,
+                'date' => $this->reject->date,
+                'time' => $this->reject->time,
+                'payable' => $this->reject->payable,
+                'progress' => $this->reject->progress,
+                'position' => $this->reject->position,
+            ],
         ];
 
         return $ret;

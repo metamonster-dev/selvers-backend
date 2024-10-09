@@ -31,8 +31,13 @@ class EventEditSurveyResource extends JsonResource
                     'type' => $value->type,
                     'options' => json_decode($value->options),
                     'required' => $value->required,
+                    'is_reject' => $value->is_reject ? true : false,
                 ];
             }),
+            
+            'is_reject' => [
+                'survey' => $this->reject->survey,
+            ],
         ];
         
         return $ret;

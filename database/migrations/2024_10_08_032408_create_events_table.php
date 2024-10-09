@@ -118,6 +118,9 @@ return new class extends Migration
             $table->boolean('progress')->default(false);
             $table->boolean('position')->default(false);
             $table->boolean('content')->default(false);
+            $table->boolean('recurit_date')->default(false);
+            $table->boolean('recurit_type')->default(false);
+            $table->boolean('recurit_information')->default(false);
             $table->boolean('tag')->default(false);
             $table->boolean('survey')->default(false);
             $table->boolean('faq')->default(false);

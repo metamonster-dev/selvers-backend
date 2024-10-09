@@ -30,11 +30,17 @@ class EventEditFAQResource extends JsonResource
                 return [
                     'question' => $value->question,
                     'answer' => $value->answer,
+                    'is_reject' => $value->is_reject ? true : false,
                 ];
             }),
             'contact_name' => $this->contact_name,
             'contact_email' => $this->contact_email,
             'contact_number' => $this->contact_number,
+
+            'is_reject' => [
+                'faq' => $this->reject->faq,
+                'contact' => $this->reject->contact,
+            ],
         ];
         
         return $ret;
