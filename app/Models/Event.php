@@ -31,15 +31,32 @@ class Event extends Model
         'title',
         'img1',
         'img2',
-        'start_date',
-        'start_time',
-        'end_date',
-        'end_time',
+        'event_start_date',
+        'event_start_time',
+        'event_end_date',
+        'event_end_time',
+
+        'payable_type',
+        'payable_start_date',
+        'payable_end_date',
+        'payable_price',
+        'payable_price_url',
+
         'progress_type',
         'progress_url',
         'position1',
         'position2',
         'content',
+
+        'recurit_type',
+        'recurit_start_date',
+        'recurit_end_date',
+        'recurit_start_time',
+        'recurit_end_time',
+
+        'is_survey',
+        'is_FAQ',
+
         'contact_name',
         'contact_email',
         'contact_number',
@@ -50,15 +67,10 @@ class Event extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
-    public function payable(): HasOne
+    
+    public function information(): BelongsToMany
     {
-        return $this->hasOne(EventPayable::class);
-    }
-
-    public function recurit(): HasOne
-    {
-        return $this->hasOne(EventRecurit::class);
+        return $this->belongsToMany(Information::class, 'event_information')->withPivot('required');
     }
 
     public function surveys(): HasMany

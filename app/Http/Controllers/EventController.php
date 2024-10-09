@@ -52,9 +52,6 @@ class EventController extends BaseController
         $input = $request->only(['title', 'category_id']);
         $input['user_id'] = $user->id;
         $event = Event::create($input);
-
-        $eventPayable = EventPayable::create(['event_id' => $event->id]);
-        $eventRecurit = EventRecurit::create(['event_id' => $event->id]);
         $eventReject = EventReject::create(['event_id' => $event->id]);
 
         $success = [
@@ -88,21 +85,22 @@ class EventController extends BaseController
             'category_id' => Rule::exists('categories', 'id'),
             'img1' => File::types(['jpg', 'jpeg', 'png'])->max('10mb'),
             'img2' => File::types(['jpg', 'jpeg', 'png'])->max('10mb'),
-            'start_date' => 'date',
-            'start_time' => 'date_format:H:i',
-            'end_date' => 'date',
-            'end_time' => 'date_format:H:i',
+            'event_start_date' => 'date',
+            'event_start_time' => 'date_format:H:i',
+            'event_end_date' => 'date',
+            'event_end_time' => 'date_format:H:i',
             'progress_type' => 'digits_between:0,2',
-            'payable.type' => 'digits_between:0,5',
-            'payable.start_date' => 'date',
-            'payable.end_date' => 'date',
+            'payable_type' => 'digits_between:0,5',
+            'payable_start_date' => 'date',
+            'payable_end_date' => 'date',
         ]);
 
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
-        $input = $request->only(['title', 'category_id', 'img1', 'img2', 'start_date', 'start_time', 'end_date', 'end_time', 'payable', 'progress_type', 'progress_url', 'position1', 'position2']);
+        $input = $request->only(['title', 'category_id', 'img1', 'img2', 'event_start_date', 'event_start_time', 'event_end_date', 'event_end_time', 
+                                'payable_type', 'payable_start_date', 'payable_end_date', 'payable_type', 'payable_price', 'payable_price_url', 'progress_url', 'position1', 'position2']);
 
         $uploadFolder = 'event_img';
         if (array_key_exists('img1', $input)) {
@@ -127,8 +125,6 @@ class EventController extends BaseController
             $input['img2'] = $image_uploaded_path;
         }
 
-        if (array_key_exists('payable', $input))
-            $event->payable()->update(json_decode($input['payable'], true));
         $event->update($input);
 
         $success = [$input];
@@ -196,24 +192,24 @@ class EventController extends BaseController
             return $this->sendError('Authentication Error.');
 
         $validator = Validator::make($request->all(), [
-            'start_date' => 'date',
-            'start_time' => 'date_format:H:i',
-            'end_date' => 'date',
-            'end_time' => 'date_format:H:i',
-            'type' => 'digits_between:0,2',
+            'recurit_type' => 'digits_between:0,2',
+            'recurit_start_date' => 'date',
+            'recurit_start_time' => 'date_format:H:i',
+            'recurit_end_date' => 'date',
+            'recurit_end_time' => 'date_format:H:i',
         ]);
 
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
-        $input = $request->only(['start_date', 'start_time', 'end_date', 'end_time', 'type', 'informations']);
+        $input = $request->only(['recurit_type', 'recurit_start_date', 'recurit_start_time', 'recurit_end_date', 'recurit_end_time', 'informations']);
 
         if (array_key_exists('informations', $input)) {
             foreach($input['informations'] as $key => $val)
-                $event->recurit->information()->sync($key, ['required' => $val]);
+                $event->information()->sync($key, ['required' => $val]);
         }
-        $event->recurit->update($input);
+        $event->update($input);
 
 
         $success = [$input];

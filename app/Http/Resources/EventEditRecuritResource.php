@@ -26,17 +26,15 @@ class EventEditRecuritResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $recurit = $this->recurit;
-
         $ret = [
-            'start_date' => $recurit->start_date,
-            'end_date' => $recurit->end_date,
-            'start_time' => $recurit->start_time,
-            'end_time' => $recurit->end_time,
-            'type' => $recurit->type,
+            'type' => $this->recurit_type,
+            'start_date' => $this->recurit_start_date,
+            'end_date' => $this->recurit_end_date,
+            'start_time' => $this->recurit_start_time,
+            'end_time' => $this->recurit_end_time,
 
-            'informations' => Information::all()->map(function ($value) use($recurit) {
-                $info = $value->recurits->find($recurit->id);
+            'informations' => Information::all()->map(function ($value) {
+                $info = $value->events->find($this->id);
                 return [
                     "id" => $value->id,
                     "name" => $value->name,

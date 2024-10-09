@@ -31,10 +31,9 @@ return new class extends Migration
         Schema::create('user_event_information', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_event_id')->index()->constrained()->onDelete('cascade');
-            $table->foreignId('recruit_information_id')->index()->constrained(table: 'event_recruit_information')->onDelete('cascade');
+            $table->foreignId('event_information_id')->index()->constrained(table: 'event_information')->onDelete('cascade');
             $table->string('answer')->nullable();
         });
-
 
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
@@ -44,7 +43,6 @@ return new class extends Migration
             $table->integer('like')->unsigned()->default(0);
             $table->timestamps();
         });
-
 
         Schema::create('booth_likes', function (Blueprint $table) {
             $table->id();
@@ -64,7 +62,6 @@ return new class extends Migration
             $table->foreignId('user_id')->index()->constrained()->onDelete('cascade');
             $table->foreignId('review_id')->index()->constrained()->onDelete('cascade');
         });
-
 
     }
 

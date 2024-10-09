@@ -30,24 +30,22 @@ class EventEditBasicResource extends JsonResource
             'category' => $this->category,
             'img1' => $this->img1,
             'img2' => $this->img2,
-            'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
-            'start_time' => $this->start_time,
-            'end_time' => $this->end_time,
+            'event_start_date' => $this->start_date,
+            'event_end_date' => $this->end_date,
+            'event_start_time' => $this->start_time,
+            'event_end_time' => $this->end_time,
+
+            'payable_type' => $this->payable_type,
+            'payable_start_date' => $this->payable_start_date,
+            'payable_end_date' => $this->payable_end_date,
+            'payable_price' => $this->payable_price,
+            'payable_price_url' => $this->payable_price_url,
+
             'title' => $this->title,
             'progress_type' => $this->progress_type,
             'progress_url' => $this->progress_url,
             'position1' => $this->position1,
             'position2' => $this->position2,
-        ];
-
-        $payable = $this->payable;
-        $ret['payable'] = [
-            'type' => $payable->type,
-            'start_date' => $payable->start_date,
-            'end_date' => $payable->end_date,
-            'price' => $payable->price,
-            'price_url' => $payable->price_url,
         ];
 
         return $ret;

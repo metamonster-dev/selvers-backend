@@ -26,8 +26,8 @@ class Information extends Model
         ];
     }
 
-    public function recurits(): BelongsToMany
+    public function events(): BelongsToMany
     {
-        return $this->belongsToMany(EventRecurit::class, 'event_recruit_information')->withPivot('required');
+        return $this->belongsToMany(EventRecurit::class, 'event_information')->withPivot('required');
     }
 }
