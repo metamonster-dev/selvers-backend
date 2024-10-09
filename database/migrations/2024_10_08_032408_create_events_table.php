@@ -26,11 +26,12 @@ return new class extends Migration
             $table->time('event_start_time')->nullable();
             $table->time('event_end_time')->nullable();
 
-            $table->integer('payable_type')->unsigned()->default(0); // 비용 설정 0~4
+            $table->integer('payable_type')->unsigned()->default(0); // 0: 선택 필요, 1: 무료, 2: 사전신청 무료/현장구매 유료, 3: 사전신청 무료/기간설정 유료/현장구매 유료, 4: 사전신청 유료/현장구매 유료, 5: 유료
             $table->date('payable_start_date')->nullable();
             $table->date('payable_end_date')->nullable();
-            $table->string('payable_price')->nullable();
             $table->string('payable_price_url')->nullable();
+            $table->string('payable_price1')->nullable(); // 유료 신청 기간 비용
+            $table->string('payable_price2')->nullable(); // 현장 신청 비용
 
             $table->integer('progress_type')->unsigned()->default(0); // 0: 오프라인, 1: 온라인, 2: 하이브리드
             $table->string('progress_url')->nullable();
@@ -83,7 +84,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id')->index()->constrained()->onDelete('cascade');
             $table->integer('type')->unsigned()->default(0); // 0: 단일, 1: 다중, 2: 장문
-            $table->string('options'); // JSON 형태로 저장
+            $table->string('options'); // 배열 형태로 저장
             $table->boolean('required'); // 필수 설정 유무
             $table->boolean('is_reject')->default(false); // 수정 요청
         });

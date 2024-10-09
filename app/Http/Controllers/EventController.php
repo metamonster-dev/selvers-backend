@@ -17,6 +17,8 @@ use App\Models\Tag;
 use App\Http\Resources\EventEditBasicResource;
 use App\Http\Resources\EventEditDetailResource;
 use App\Http\Resources\EventEditRecuritResource;
+use App\Http\Resources\EventEditSurveyResource;
+use App\Http\Resources\EventEditFAQResource;
 
 use Validator;
 use Illuminate\Validation\Rule;
@@ -59,6 +61,27 @@ class EventController extends BaseController
         return $this->sendResponse($success, 'Event create successfully.');
     }
 
+    public function checkState(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+
+        if (!$user->is_admin) {
+            if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+                return $this->sendError('Authentication Error.');
+        }
+
+        $success = [
+            "basic" => $event->checkBasic(),
+            "detail" => $event->checkDetail(),
+            "recurit" => $event->checkRecurit(),
+            "survey" => $event->checkSurvey(),
+            "faq" => $event->checkFAQ(),
+        ];
+        return $this->sendResponse($success, 'Event edit state data');
+
+    }
+
     public function retriveBasic(Request $request, string $id): JsonResponse
     {
         $user = $request->user();
@@ -88,8 +111,8 @@ class EventController extends BaseController
             'event_start_time' => 'date_format:H:i',
             'event_end_date' => 'date',
             'event_end_time' => 'date_format:H:i',
-            'progress_type' => 'digits_between:0,2',
-            'payable_type' => 'digits_between:0,5',
+            'progress_type' => 'numeric|between:0,2',
+            'payable_type' => 'numeric|between:0,5',
             'payable_start_date' => 'date',
             'payable_end_date' => 'date',
         ]);
@@ -99,7 +122,7 @@ class EventController extends BaseController
         }
 
         $input = $request->only(['title', 'category_id', 'img1', 'img2', 'event_start_date', 'event_start_time', 'event_end_date', 'event_end_time', 
-                                'payable_type', 'payable_start_date', 'payable_end_date', 'payable_type', 'payable_price', 'payable_price_url', 'progress_url', 'position1', 'position2']);
+                                'payable_type', 'payable_start_date', 'payable_end_date', 'payable_price1', 'payable_price2', 'payable_price_url', 'progress_type', 'progress_url', 'position1', 'position2']);
 
         $uploadFolder = 'event_img';
         if (array_key_exists('img1', $input)) {
@@ -122,6 +145,29 @@ class EventController extends BaseController
             $image_url = Storage::disk('public')->url($image_uploaded_path);
 
             $input['img2'] = $image_uploaded_path;
+        }
+
+        $progress_type = array_key_exists('progress_type', $input) ? $input['progress_type'] : $event->progress_type;
+        if ($progress_type == 0)
+            $input['progress_url'] = null;
+
+        $payable_type = array_key_exists('payable_type', $input) ? $input['payable_type'] : $event->payable_type;
+        if ($payable_type == 0 || $payable_type == 1) {
+            $input['payable_start_date'] = null;
+            $input['payable_end_date'] = null;
+            $input['payable_price_url'] = null;
+            $input['payable_price1'] = null;
+            $input['payable_price2'] = null;
+        } else if ($payable_type == 2) {
+            $input['payable_start_date'] = null;
+            $input['payable_end_date'] = null;
+            $input['payable_price_url'] = null;
+            $input['payable_price1'] = null;
+        } else if ($payable_type == 5) {
+            $input['payable_start_date'] = null;
+            $input['payable_end_date'] = null;
+            $input['payable_price1'] = null;
+            $input['payable_price2'] = null;
         }
 
         $event->update($input);
@@ -180,7 +226,7 @@ class EventController extends BaseController
         }
         
         $success = new EventEditRecuritResource($event);
-        return $this->sendResponse($success, 'Event edit detail data');
+        return $this->sendResponse($success, 'Event edit recurit data');
     }
 
     public function updateRecurit(Request $request, string $id): JsonResponse
@@ -191,7 +237,7 @@ class EventController extends BaseController
             return $this->sendError('Authentication Error.');
 
         $validator = Validator::make($request->all(), [
-            'recurit_type' => 'digits_between:0,2',
+            'recurit_type' => 'numeric|between:0,2',
             'recurit_start_date' => 'date',
             'recurit_start_time' => 'date_format:H:i',
             'recurit_end_date' => 'date',
@@ -213,11 +259,108 @@ class EventController extends BaseController
         $event->update($input);
 
         $success = [$input];
-        return $this->sendResponse($success, 'Event default data update successfully.');
+        return $this->sendResponse($success, 'Event recurit data update successfully.');
     }
 
+    public function retriveSurvey(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
 
+        if (!$user->is_admin) {
+            if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+                return $this->sendError('Authentication Error.');
+        }
+        
+        $success = new EventEditSurveyResource($event);
+        return $this->sendResponse($success, 'Event edit survey data');
+    }
 
+    public function updateSurvey(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+        if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+            return $this->sendError('Authentication Error.');
 
+        $validator = Validator::make($request->all(), [
+            'is_survey' => 'boolean',
+            'surveys.*.type' => 'sometimes|required|numeric|between:0,2',
+            'surveys.*.options' => 'sometimes|required|array',
+            'surveys.*.options.*' => 'sometimes|required|string',
+            'surveys.*.required' => 'sometimes|required|boolean',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $input = $request->only(['is_survey', 'surveys']);
+
+        if (array_key_exists('surveys', $input)) {
+            $surveys = $event->surveys();
+            $surveys->delete();
+
+            foreach($input['surveys'] as $value) {
+                $options = $value['options'];
+                if ($value['type'] == 2)
+                    $options = [$options[0]];
+
+                $value['options'] = json_encode($options);
+                $surveys->create($value);
+            }
+        }
+        $event->update($input);
+
+        $success = [$input];
+        return $this->sendResponse($success, 'Event survey data update successfully.');
+    }
+
+    public function retriveFAQ(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+
+        if (!$user->is_admin) {
+            if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+                return $this->sendError('Authentication Error.');
+        }
+        
+        $success = new EventEditFAQResource($event);
+        return $this->sendResponse($success, 'Event edit FAQ data');
+    }
+
+    public function updateFAQ(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+        if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+            return $this->sendError('Authentication Error.');
+
+        $validator = Validator::make($request->all(), [
+            'is_FAQ' => 'boolean',
+            'faqs.*.question' => 'sometimes|required|string',
+            'faqs.*.answer' => 'sometimes|required|string',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $input = $request->only(['is_FAQ', 'faqs', 'contact_name', 'contact_email', 'contact_number']);
+
+        if (array_key_exists('faqs', $input)) {
+            $faqs = $event->faqs();
+            $faqs->delete();
+
+            foreach($input['faqs'] as $value) {
+                $faqs->create($value);
+            }
+        }
+        $event->update($input);
+
+        $success = [$input];
+        return $this->sendResponse($success, 'Event FAQ data update successfully.');
+    }
 
 }

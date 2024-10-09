@@ -36,8 +36,9 @@ class EventEditBasicResource extends JsonResource
             'payable_type' => $this->payable_type,
             'payable_start_date' => $this->payable_start_date,
             'payable_end_date' => $this->payable_end_date,
-            'payable_price' => $this->payable_price,
             'payable_price_url' => $this->payable_price_url,
+            'payable_price1' => $this->payable_price1,
+            'payable_price2' => $this->payable_price2,
 
             'title' => $this->title,
             'progress_type' => $this->progress_type,
