@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 use App\Models\Event;
-use App\Models\EventPayable;
-use App\Models\EventRecurit;
 use App\Models\EventSurvey;
 use App\Models\EventFAQ;
 use App\Models\EventBooth;
@@ -30,10 +28,10 @@ class EventEditBasicResource extends JsonResource
             'category' => $this->category,
             'img1' => $this->img1,
             'img2' => $this->img2,
-            'event_start_date' => $this->start_date,
-            'event_end_date' => $this->end_date,
-            'event_start_time' => $this->start_time,
-            'event_end_time' => $this->end_time,
+            'event_start_date' => $this->event_start_date,
+            'event_end_date' => $this->event_end_date,
+            'event_start_time' => $this->event_start_time,
+            'event_end_time' => $this->event_end_time,
 
             'payable_type' => $this->payable_type,
             'payable_start_date' => $this->payable_start_date,

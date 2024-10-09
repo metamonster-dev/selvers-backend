@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 use App\Models\Event;
-use App\Models\EventPayable;
-use App\Models\EventRecurit;
 use App\Models\EventSurvey;
 use App\Models\EventFAQ;
 use App\Models\EventBooth;
@@ -40,7 +38,7 @@ class EventEditRecuritResource extends JsonResource
                     "name" => $value->name,
                     "is_set" => $info != null,
                     "can_required" => $value->can_required,
-                    "required" => ($info != null) ? $info->pivot->required : $value->can_required,
+                    "required" => ($info != null) ? ($info->pivot->required == 1 ? true : false) : !$value->can_required,
                 ];
             }),
         ];

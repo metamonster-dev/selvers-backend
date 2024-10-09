@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController as BaseController;
 
 use App\Models\Event;
-use App\Models\EventPayable;
-use App\Models\EventRecurit;
 use App\Models\EventSurvey;
 use App\Models\EventFAQ;
 use App\Models\EventBooth;
@@ -26,6 +24,7 @@ use Illuminate\Validation\Rules\File;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Collection;
 use Mail;
 
 class EventController extends BaseController
@@ -206,11 +205,12 @@ class EventController extends BaseController
         $input = $request->only(['recurit_type', 'recurit_start_date', 'recurit_start_time', 'recurit_end_date', 'recurit_end_time', 'informations']);
 
         if (array_key_exists('informations', $input)) {
-            foreach($input['informations'] as $key => $val)
-                $event->information()->sync($key, ['required' => $val]);
+            $informations = collect($input['informations'])->map(function ($val, $key) {
+                return ['required' => $val];
+            });
+            $event->information()->sync($informations);
         }
         $event->update($input);
-
 
         $success = [$input];
         return $this->sendResponse($success, 'Event default data update successfully.');

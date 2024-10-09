@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-use App\Models\EventRecurit;
+use App\Models\Event;
 
 class Information extends Model
 {
@@ -28,6 +28,6 @@ class Information extends Model
 
     public function events(): BelongsToMany
     {
-        return $this->belongsToMany(EventRecurit::class, 'event_information')->withPivot('required');
+        return $this->belongsToMany(Event::class, 'event_information')->withPivot('required');
     }
 }

@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 use App\Models\Event;
-use App\Models\EventPayable;
-use App\Models\EventRecurit;
 use App\Models\EventSurvey;
 use App\Models\EventFAQ;
 use App\Models\EventBooth;
