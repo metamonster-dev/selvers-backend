@@ -79,7 +79,37 @@ class EventController extends BaseController
             "faq" => $event->checkFAQ(),
         ];
         return $this->sendResponse($success, 'Event edit state data');
+    }
 
+    public function submit(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        $event = Event::find($id);
+
+        if (!$user->is_admin) {
+            if ($user->company == null && $user->company->accept != 2 && $user->id != $event->user_id)
+                return $this->sendError('Authentication Error.');
+        }
+
+        $check = true;
+        if (!$event->checkBasic())
+            $check = false;
+        if (!$event->checkDetail())
+            $check = false;
+        if (!$event->checkRecurit())
+            $check = false;
+        if (!$event->checkSurvey())
+            $check = false;
+        if (!$event->checkFAQ())
+            $check = false;
+
+        if (!$check)
+            return $this->sendError('Not finished');
+
+        $event->update(["state" => 1]);
+
+        $success = [];
+        return $this->sendResponse($success, 'Event submit finished');
     }
 
     public function retriveBasic(Request $request, string $id): JsonResponse
