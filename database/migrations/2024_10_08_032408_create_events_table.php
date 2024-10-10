@@ -70,7 +70,6 @@ return new class extends Migration
         Schema::create('information', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->boolean('can_required'); // 필수 설정 가능 유무
         });
 
         Schema::create('event_information', function (Blueprint $table) {
@@ -130,15 +129,12 @@ return new class extends Migration
         });
 
         $data = array(
-            [ 'name' => '이름', 'can_required' => false ],
-            [ 'name' => '이메일', 'can_required' => false ],
-            [ 'name' => '휴대전화 번호', 'can_required' => false ],
-            [ 'name' => '소속 (회사/기관/학교명)', 'can_required' => true ],
-            [ 'name' => '부서', 'can_required' => true ],
-            [ 'name' => '직함', 'can_required' => true ],
-            [ 'name' => '성별', 'can_required' => true ],
-            [ 'name' => '나이', 'can_required' => true ],
-            [ 'name' => '거주지역', 'can_required' => true ],
+            [ 'name' => '소속 (회사/기관/학교명)' ],
+            [ 'name' => '부서' ],
+            [ 'name' => '직함' ],
+            [ 'name' => '성별' ],
+            [ 'name' => '나이' ],
+            [ 'name' => '거주지역' ],
         );
         foreach ($data as $datum)
             Information::create($datum);;

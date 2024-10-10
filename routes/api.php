@@ -52,11 +52,14 @@ Route::get('/auth/verity/{token}', [AuthController::class, 'verityEmail'])->name
 // 이벤트 생성
 Route::post('/events', [EventController::class, 'create'])->middleware('auth:sanctum')->name('event.create');
 
-// 이벤트 제출
-Route::post('/events/{id}/edit', [EventController::class, 'submit'])->middleware('auth:sanctum')->name('event.retriveBasic');
+// 이벤트 승인
+Route::post('/events/{id}/accept', [EventController::class, 'setEventAccept'])->middleware('auth:sanctum')->name('event.setEventAccept');
 
 // 이벤트 작성 상태 확인
-Route::get('/events/{id}/edit/state', [EventController::class, 'checkState'])->middleware('auth:sanctum')->name('event.retriveBasic');
+Route::get('/events/{id}/edit', [EventController::class, 'checkState'])->middleware('auth:sanctum')->name('event.retriveBasic');
+
+// 이벤트 제출
+Route::post('/events/{id}/edit', [EventController::class, 'submit'])->middleware('auth:sanctum')->name('event.retriveBasic');
 
 // 이벤트 기본 정보 조회 및 수정
 Route::get('/events/{id}/edit/basic', [EventController::class, 'retriveBasic'])->middleware('auth:sanctum')->name('event.retriveBasic');

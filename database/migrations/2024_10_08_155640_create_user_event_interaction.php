@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->index()->constrained()->onDelete('cascade');
             $table->foreignId('event_id')->index()->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->string('email');
+            $table->string('contact');
             $table->integer('type')->unsigned()->default(0); // 0: 개인, 1: 단체
             $table->string('xlsx');
             $table->timestamp('cancel_time')->nullable();

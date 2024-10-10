@@ -16,15 +16,7 @@ class Information extends Model
     
     protected $fillable = [
         'name',
-        'can_required',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'can_required' => 'boolean',
-        ];
-    }
 
     public function events(): BelongsToMany
     {

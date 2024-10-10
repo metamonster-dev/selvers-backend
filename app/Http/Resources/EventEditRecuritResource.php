@@ -37,8 +37,7 @@ class EventEditRecuritResource extends JsonResource
                     "id" => $value->id,
                     "name" => $value->name,
                     "is_set" => $info != null,
-                    "can_required" => $value->can_required,
-                    "required" => ($info != null) ? ($info->pivot->required == 1 ? true : false) : !$value->can_required,
+                    "required" => ($info != null) ? ($info->pivot->required == 1 ? true : false) : false,
                 ];
             }),
             

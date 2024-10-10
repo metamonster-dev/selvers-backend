@@ -393,4 +393,73 @@ class EventController extends BaseController
         return $this->sendResponse($success, 'Event FAQ data update successfully.');
     }
 
+    public function setEventAccept(Request $request, string $id): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user->is_admin)
+            return $this->sendError('Authentication Error.');
+
+        $user = $request->user();
+        $event = Event::find($id);
+        if ($event->event == null && $event->state != 1)
+            return $this->sendError('Authentication Error.');
+
+        $validator = Validator::make($request->all(), [
+            'accept' => 'required|boolean',
+            'reject' => 'sometimes|array',
+            'reject.title' => 'required_with:reject.*|boolean',
+            'reject.category' => 'required_with:reject.*|boolean',
+            'reject.img' => 'required_with:reject.*|boolean',
+            'reject.date' => 'required_with:reject.*|boolean',
+            'reject.time' => 'required_with:reject.*|boolean',
+            'reject.payable' => 'required_with:reject.*|boolean',
+            'reject.progress' => 'required_with:reject.*|boolean',
+            'reject.position' => 'required_with:reject.*|boolean',
+            'reject.content' => 'required_with:reject.*|boolean',
+            'reject.recurit_date' => 'required_with:reject.*|boolean',
+            'reject.recurit_type' => 'required_with:reject.*|boolean',
+            'reject.recurit_information' => 'required_with:reject.*|boolean',
+            'reject.tag' => 'required_with:reject.*|boolean',
+            'reject.survey' => 'required_with:reject.*|boolean',
+            'reject.surveys' => 'required_with:reject.*|array',
+            'reject.faq' => 'required_with:reject.*|boolean',
+            'reject.faqs' => 'required_with:reject.*|array',
+            'reject.contact' => 'required_with:reject.*|boolean',
+        ]);
+        
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        if ($request->accept) {
+            $event->update(['state' => 3]);
+
+            Mail::send('grantEventEmail', ['name' => $event->user->name, 'event_name' => $event->name, 
+                'recurit_start_date' => $event->recurit_start_date->toDateTimeString() . ' ' . $event->recurit_start_time->toDateTimeString(), 'recurit_end_date' => $event->recurit_end_date->toDateTimeString() . ' ' . $event->recurit_end_time->toDateTimeString()], function($message) use($user) {
+                $message->to($event->user->email);
+                $message->subject('[마이스 메이트] ' . $event->name . ' 승인 안내');
+            });
+
+            return $this->sendResponse([], 'Event granted');
+        } else {
+            $reject = $input->reject;
+
+            $event->surveys()->update(['is_reject' => $reject['surveys']]);
+            $event->faqs()->update(['is_reject' => $reject['faqs']]);
+            $event->reject()->update($reject);
+            $event->update(['state' => 2]);
+
+            Mail::send('notGrantEventEmail', ['name' => $event->user->name, 'event_name' => $event->name], function($message) use($user) {
+                $message->to($event->user->email);
+                $message->subject('[마이스 메이트] ' . $event->name . ' 반려 안내');
+            });
+            
+            return $this->sendResponse([], 'Event is not granted');
+        }
+
+    }
+
+
+
+
 }
